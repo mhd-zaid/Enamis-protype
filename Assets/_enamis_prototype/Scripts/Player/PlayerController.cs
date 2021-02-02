@@ -1,18 +1,30 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+namespace _enamis_prototype.Scripts.Player
 {
-    // Start is called before the first frame update
-    void Start()
+    public class PlayerController : MonoBehaviour
     {
-        
-    }
+        private float _speed = 0.2f;
+        private float _jumpForce = 1.0f;
 
-    // Update is called once per frame
-    void Update()
-    {
+        private bool isAlive = true;
+        private bool isOnGround;
+        private bool isDashing;
+
+        private float _horizontalInput;
         
+        // Start is called before the first frame update
+        void Start()
+        {
+        
+        }
+
+        // FixedUpdate is called once per frame
+        void FixedUpdate()
+        {
+            _horizontalInput = Input.GetAxis("Horizontal");
+
+            transform.Translate(Vector3.right * (_speed * _horizontalInput));
+        }
     }
 }
