@@ -6,8 +6,8 @@ namespace _enamis_prototype.Scripts.Player
     {
         private Rigidbody2D _playerRigidbody2D;
         
-        private float _speed = 0.2f;
-        private float _jumpForce = 120.0f;
+        private float _speed = 10f;
+        private float _jumpForce = 10.0f;
 
         private bool _isOnGround = true;
 
@@ -35,7 +35,7 @@ namespace _enamis_prototype.Scripts.Player
             Vector3 newAngle = new Vector3(0, 0, -5);
             Transform transform1;
             
-            (transform1 = transform).Translate(Vector3.right * (_speed * _horizontalInput));
+            (transform1 = transform).Translate(Vector3.right * (Time.deltaTime * _speed * _horizontalInput));
             transform1.eulerAngles = newAngle * _horizontalInput;
         }
 
