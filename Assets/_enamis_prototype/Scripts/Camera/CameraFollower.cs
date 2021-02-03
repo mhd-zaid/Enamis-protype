@@ -55,7 +55,7 @@ namespace _enamis_prototype.Scripts.Camera
                     _targetPosition.y = _playerTransform.position.y;
                     break;
                 case FollowMode.GoingDown:
-                    _targetPosition = _playerTransform.position + _offset;
+                    _targetPosition = _playerTransform.position + _offset;ui
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
