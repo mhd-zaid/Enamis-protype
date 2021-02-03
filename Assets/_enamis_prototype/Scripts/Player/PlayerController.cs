@@ -10,14 +10,18 @@ namespace _enamis_prototype.Scripts.Player
         
         // ------ References ------
         private Rigidbody2D _playerRigidbody2D;
+        private GroundCheck _groundCheck;
         
         // ------ Private Attributes ------
-        private float _speed = 13f;
+        private float _speed = 15.0f;
         private float jumpForce = 900.0f;
+        
         private bool _isOnGround; //Tells if the player is on the ground or not
         private bool _canJump = true; //In order to prevent jumping with continous pressing
         
         private float _horizontalInput;
+        
+        // ------ Public References------
 
         // ------ Event Methods ------
 
@@ -25,6 +29,7 @@ namespace _enamis_prototype.Scripts.Player
         {
             //Initializing References
             _playerRigidbody2D = GetComponent<Rigidbody2D>();
+            _groundCheck = GameObject.Find("Ground Check").GetComponent<GroundCheck>();
         }
 
         // Start is called before the first frame update
@@ -37,8 +42,13 @@ namespace _enamis_prototype.Scripts.Player
         // FixedUpdate is called once per frame
         private void FixedUpdate()
         {
+            _isOnGround = _groundCheck.isOnGround();
+            
             if (_isOnGround && _canJump &&Input.GetKey(KeyCode.Space))
                 Jump();
+            
+            _horizontalInput = Input.GetAxis("Horizontal");
+            Move();
         }
 
         // Update is called once per frame
@@ -47,8 +57,8 @@ namespace _enamis_prototype.Scripts.Player
             if (!_canJump && Input.GetKeyUp(KeyCode.Space))
                 _canJump = true;
             
-            _horizontalInput = Input.GetAxis("Horizontal");
-            Move();
+            //_horizontalInput = Input.GetAxis("Horizontal");
+            //Move();
         }
         
         // ------- Basics Movements Methods -------
@@ -58,11 +68,10 @@ namespace _enamis_prototype.Scripts.Player
          */
         private void Move()
         {
-            Vector3 newAngle = new Vector3(0, 0, -2);
-            Transform transform1;
+            Vector3 newAngle = new Vector3(0, 0, -1.5f);
+            _playerRigidbody2D.velocity = new Vector2(_speed * _horizontalInput, _playerRigidbody2D.velocity.y);
             
-            (transform1 = transform).Translate(Vector3.right * (Time.deltaTime * _speed * _horizontalInput));
-            transform1.eulerAngles = newAngle * _horizontalInput; //WILL BECOME OBSOLETE AFTER CREATION OF SPRITE ANIMATOR
+            transform.eulerAngles = newAngle * _horizontalInput; //WILL BECOME OBSOLETE AFTER CREATION OF SPRITE ANIMATOR
         }
 
         /**
@@ -75,21 +84,8 @@ namespace _enamis_prototype.Scripts.Player
             _isOnGround = false;
             _canJump = false;
         }
-
         
         // ------- Collisions and Triggers Methods -------
-
-        private void OnCollisionEnter2D(Collision2D other)
-        {
-            if (other.gameObject.CompareTag("Ground"))
-                _isOnGround = true;
-        }
-
-        private void OnCollisionExit2D(Collision2D other)
-        {
-            if (other.gameObject.CompareTag("Ground"))
-                _isOnGround = false;
-        }
 
         private void OnTriggerEnter2D(Collider2D other)
         {
