@@ -13,6 +13,8 @@ namespace _enamis_prototype.Scripts.Player
         private GroundCheck _groundCheck;
         
         // ------ Private Attributes ------
+        private readonly Vector3 _defaultPosition = new Vector3(0, 3, 0);
+        
         private float _speed = 15.0f;
         private float jumpForce = 900.0f;
         
@@ -46,7 +48,7 @@ namespace _enamis_prototype.Scripts.Player
             
             if (_isOnGround && _canJump &&Input.GetKey(KeyCode.Space))
                 Jump();
-            
+
             _horizontalInput = Input.GetAxis("Horizontal");
             Move();
         }
@@ -56,6 +58,13 @@ namespace _enamis_prototype.Scripts.Player
         {
             if (!_canJump && Input.GetKeyUp(KeyCode.Space))
                 _canJump = true;
+
+            if (transform.position.y < -20)
+            {
+                transform.localPosition = _defaultPosition;
+                _playerRigidbody2D.velocity = new Vector2(0, 0);
+
+            }
             
             //_horizontalInput = Input.GetAxis("Horizontal");
             //Move();
