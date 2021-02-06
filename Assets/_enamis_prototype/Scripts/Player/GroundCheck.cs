@@ -8,7 +8,7 @@ namespace _enamis_prototype.Scripts.Player
 
         private void OnCollisionEnter2D(Collision2D other)
         {
-            if (other.gameObject.CompareTag("Ground"))
+            if (other.gameObject.CompareTag("Ground") || other.gameObject.CompareTag("Rock"))
                 _groundCheck = true;
         }
 

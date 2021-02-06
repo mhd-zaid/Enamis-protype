@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7101907628903446648}
   m_Layer: 0
   m_Name: Rock
-  m_TagString: Ground
+  m_TagString: Rock
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -96,7 +96,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 900
+  m_Mass: 700
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1

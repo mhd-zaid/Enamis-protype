@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -6,7 +7,8 @@ namespace _enamis_prototype.Scripts.Player
     public class PlayerController : MonoBehaviour
     {
         // ------Constants ------
-        private const float GravityModifier = 5.0f;
+        private const float GravityModifier = 4.5f;
+        private const float MaxFallSpeed = 35.0f;
         
         // ------ References ------
         private Rigidbody2D _playerRigidbody2D;
@@ -16,10 +18,11 @@ namespace _enamis_prototype.Scripts.Player
         private readonly Vector3 _defaultPosition = new Vector3(0, 3, 0);
         
         private float _speed = 15.0f;
-        private float jumpForce = 900.0f;
+        private float jumpForce = 1000.0f;
         
         private bool _isOnGround; //Tells if the player is on the ground or not
         private bool _canJump = true; //In order to prevent jumping with continous pressing
+        private bool _canDoubleJump = true;
         
         private float _horizontalInput;
         
@@ -51,6 +54,9 @@ namespace _enamis_prototype.Scripts.Player
 
             _horizontalInput = Input.GetAxis("Horizontal");
             Move();
+
+            if (_playerRigidbody2D.velocity.y > MaxFallSpeed)
+                _playerRigidbody2D.velocity = new Vector2(_playerRigidbody2D.velocity.x, MaxFallSpeed);
         }
 
         // Update is called once per frame
@@ -63,11 +69,7 @@ namespace _enamis_prototype.Scripts.Player
             {
                 transform.localPosition = _defaultPosition;
                 _playerRigidbody2D.velocity = new Vector2(0, 0);
-
             }
-            
-            //_horizontalInput = Input.GetAxis("Horizontal");
-            //Move();
         }
         
         // ------- Basics Movements Methods -------
@@ -77,10 +79,7 @@ namespace _enamis_prototype.Scripts.Player
          */
         private void Move()
         {
-            Vector3 newAngle = new Vector3(0, 0, -1.5f);
             _playerRigidbody2D.velocity = new Vector2(_speed * _horizontalInput, _playerRigidbody2D.velocity.y);
-            
-            transform.eulerAngles = newAngle * _horizontalInput; //WILL BECOME OBSOLETE AFTER CREATION OF SPRITE ANIMATOR
         }
 
         /**
@@ -95,13 +94,16 @@ namespace _enamis_prototype.Scripts.Player
         }
         
         // ------- Collisions and Triggers Methods -------
+        private void OnCollisionEnter2D(Collision2D other)
+        {
+            if (other.gameObject.CompareTag("Ground"))
+                _playerRigidbody2D.velocity = new Vector2(_playerRigidbody2D.velocity.x, 0);
+        }
 
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (other.gameObject.CompareTag("Token"))
-            {
                 Destroy(other.gameObject);
-            }
         }
 
         // ------- Coroutines Methods -------

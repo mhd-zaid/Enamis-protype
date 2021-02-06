@@ -66,7 +66,11 @@ namespace _enamis_prototype.Scripts.Camera
 
         private FollowMode UpdateFollowMode()
         {
-            // A REMPLACER PAR VALEUR SOL ET NOUVELLE VALEUR SOL PLUS TARD POUR SADAPTER 
+            /*
+             * TODO
+             * A REMPLACER PAR VALEUR SOL ET NOUVELLE VALEUR SOL PLUS TARD POUR SADAPTER 
+             */
+            
             if (_playerTransform.position.y > 5)
             {
                 Vector3.MoveTowards(_cameraTransform.position, _playerTransform.position, Single.MaxValue);

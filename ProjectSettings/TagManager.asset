@@ -7,6 +7,8 @@ TagManager:
   - Ground
   - Token
   - Wall
+  - Bouncy
+  - Rock
   layers:
   - Default
   - TransparentFX
