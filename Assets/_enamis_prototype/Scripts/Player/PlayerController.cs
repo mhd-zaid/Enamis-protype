@@ -19,10 +19,12 @@ namespace _enamis_prototype.Scripts.Player
         
         private float _speed = 15.0f;
         private float jumpForce = 1000.0f;
+
+        [SerializeField] [Range(0, 2)] private int _jumpCount = 0;
         
-        private bool _isOnGround; //Tells if the player is on the ground or not
-        private bool _canJump = true; //In order to prevent jumping with continous pressing
-        private bool _canDoubleJump = true;
+        [SerializeField] private bool _isOnGround; //Tells if the player is on the ground or not
+        [SerializeField] private bool _canJump = true; //In order to prevent jumping with continous pressing
+        [SerializeField] private bool _canDoubleJump = true;
         
         private float _horizontalInput;
         
@@ -49,26 +51,44 @@ namespace _enamis_prototype.Scripts.Player
         {
             _isOnGround = _groundCheck.isOnGround();
             
-            if (_isOnGround && _canJump &&Input.GetKey(KeyCode.Space))
-                Jump();
+            _jumpCount = _isOnGround switch
+            {
+                true => 0,
+                false when _jumpCount == 0 => 1,
+                _ => _jumpCount
+            };
+
+            switch (_jumpCount)
+            {
+                case 0:
+                    if (_isOnGround && _canJump && Input.GetKey(KeyCode.Space))
+                        Jump();
+                    break;
+                case 1:
+                    if (_canDoubleJump && _canJump && Input.GetKey(KeyCode.Space))
+                        Jump();
+                    break;
+            }
 
             _horizontalInput = Input.GetAxis("Horizontal");
             Move();
 
             if (_playerRigidbody2D.velocity.y > MaxFallSpeed)
-                _playerRigidbody2D.velocity = new Vector2(_playerRigidbody2D.velocity.x, MaxFallSpeed);
+                SetPlayerVelocity(_playerRigidbody2D.velocity.x, MaxFallSpeed);
         }
 
         // Update is called once per frame
         private void Update()
         {
             if (!_canJump && Input.GetKeyUp(KeyCode.Space))
+            {
                 _canJump = true;
+            }
 
             if (transform.position.y < -20)
             {
                 transform.localPosition = _defaultPosition;
-                _playerRigidbody2D.velocity = new Vector2(0, 0);
+                SetPlayerVelocity(0, 0);
             }
         }
         
@@ -79,7 +99,7 @@ namespace _enamis_prototype.Scripts.Player
          */
         private void Move()
         {
-            _playerRigidbody2D.velocity = new Vector2(_speed * _horizontalInput, _playerRigidbody2D.velocity.y);
+            SetPlayerVelocity(_speed * _horizontalInput, _playerRigidbody2D.velocity.y);
         }
 
         /**
@@ -87,17 +107,25 @@ namespace _enamis_prototype.Scripts.Player
          */
         private void Jump()
         {
+            SetPlayerVelocity(_playerRigidbody2D.velocity.x, 0);
             _playerRigidbody2D.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             StartCoroutine(nameof(JumpAnimationScale));
             _isOnGround = false;
             _canJump = false;
+            ++_jumpCount;
         }
+
+        private void SetPlayerVelocity(float x, float y)
+        {
+            _playerRigidbody2D.velocity = new Vector2(x, y);
+        }
+        
         
         // ------- Collisions and Triggers Methods -------
         private void OnCollisionEnter2D(Collision2D other)
         {
             if (other.gameObject.CompareTag("Ground"))
-                _playerRigidbody2D.velocity = new Vector2(_playerRigidbody2D.velocity.x, 0);
+                SetPlayerVelocity(_playerRigidbody2D.velocity.x, 0);
         }
 
         private void OnTriggerEnter2D(Collider2D other)
