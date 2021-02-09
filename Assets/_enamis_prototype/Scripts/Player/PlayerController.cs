@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
@@ -20,11 +19,11 @@ namespace _enamis_prototype.Scripts.Player
         private float _speed = 15.0f;
         private float jumpForce = 1000.0f;
 
-        [SerializeField] [Range(0, 2)] private int _jumpCount = 0;
+        [Range(0, 2)] private int _jumpCount;
         
-        [SerializeField] private bool _isOnGround; //Tells if the player is on the ground or not
-        [SerializeField] private bool _canJump = true; //In order to prevent jumping with continous pressing
-        [SerializeField] private bool _canDoubleJump = true;
+        private bool _isOnGround; //Tells if the player is on the ground or not
+        private bool _canJump = true; //In order to prevent jumping with continous pressing
+        private bool _canDoubleJump = true;
         
         private float _horizontalInput;
         
