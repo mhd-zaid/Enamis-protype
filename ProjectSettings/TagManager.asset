@@ -9,6 +9,8 @@ TagManager:
   - Wall
   - Bouncy
   - Rock
+  - Enemy
+  - Projectile
   layers:
   - Default
   - TransparentFX

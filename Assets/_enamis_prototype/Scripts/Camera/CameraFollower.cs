@@ -1,4 +1,5 @@
 using System;
+using _enamis_prototype.Scripts.Player;
 using UnityEngine;
 
 namespace _enamis_prototype.Scripts.Camera
@@ -13,12 +14,17 @@ namespace _enamis_prototype.Scripts.Camera
         // ------ References ------
         private Transform _playerTransform;
         private Transform _cameraTransform;
-
+        private GroundCheck _groundCheck;
+        
         // ------ Private Attributes ------
         private Vector3 _targetPosition = new Vector3(0, 0, 0);
         private readonly Vector3 _offset = new Vector3(XPosBase, YPosBase, ZPosBase);
 
         private FollowMode _followMode = FollowMode.Basic;
+
+        private float _upReadjustmentValue = 5.0f;
+        private float _downReadjustmentValue = -1.0f;
+        private float _newNormalPosition = 0;
         
         private enum FollowMode
         {
@@ -33,7 +39,13 @@ namespace _enamis_prototype.Scripts.Camera
         private void Awake()
         {
             _playerTransform = GameObject.Find("Player").GetComponent<Transform>();
+            _groundCheck = GameObject.Find("Ground Check").GetComponent<GroundCheck>();
             _cameraTransform = transform;
+        }
+
+        private void Start()
+        {
+            _newNormalPosition = _playerTransform.transform.position.y;
         }
 
         private void Update()
@@ -60,7 +72,6 @@ namespace _enamis_prototype.Scripts.Camera
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            
             _cameraTransform.position = _targetPosition;
         }
 
@@ -71,15 +82,19 @@ namespace _enamis_prototype.Scripts.Camera
              * A REMPLACER PAR VALEUR SOL ET NOUVELLE VALEUR SOL PLUS TARD POUR SADAPTER 
              */
             
-            if (_playerTransform.position.y > 5)
+            if (_playerTransform.position.y > _upReadjustmentValue)
             {
                 Vector3.MoveTowards(_cameraTransform.position, _playerTransform.position, Single.MaxValue);
+                if (_groundCheck.isOnGround())
+                    _followMode = FollowMode.Basic;
                 return FollowMode.ReajustHeight;
             }
-
-            if (_playerTransform.position.y < -1)
+            
+            if (_playerTransform.position.y < _downReadjustmentValue)
             {
                 Vector3.MoveTowards(_cameraTransform.position, _playerTransform.position + _offset, Single.MaxValue);
+                if (_groundCheck.isOnGround())
+                    _followMode = FollowMode.Basic;
                 return FollowMode.GoingDown;
             }
             return FollowMode.Basic;

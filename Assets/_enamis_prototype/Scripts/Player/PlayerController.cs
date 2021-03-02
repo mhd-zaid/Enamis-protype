@@ -17,7 +17,7 @@ namespace _enamis_prototype.Scripts.Player
         private readonly Vector3 _defaultPosition = new Vector3(0, 3, 0);
         
         private float _speed = 15.0f;
-        private float jumpForce = 1000.0f;
+        private float _jumpForce = 1000.0f;
 
         [Range(0, 2)] private int _jumpCount;
         
@@ -107,7 +107,7 @@ namespace _enamis_prototype.Scripts.Player
         private void Jump()
         {
             SetPlayerVelocity(_playerRigidbody2D.velocity.x, 0);
-            _playerRigidbody2D.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            _playerRigidbody2D.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
             StartCoroutine(nameof(JumpAnimationScale));
             _isOnGround = false;
             _canJump = false;
