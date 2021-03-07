@@ -6,32 +6,41 @@ namespace _enamis_prototype.Scripts.Player
     public class PlayerController : MonoBehaviour
     {
         // ------Constants ------
-        private const float GravityModifier = 4.5f;
+        private const float GravityModifier = 7.0f;
         private const float MaxFallSpeed = 35.0f;
+        private const float DefaultProjectileSpeed = 30.0f;
+        private const float DefaultProjectileDelay = 0.5f;
+        private const float DefaultSpeed = 15.0f;
+        private const float DefaultJumpForce = 1300.0f;
         
         // ------ References ------
         private Rigidbody2D _playerRigidbody2D;
         private GroundCheck _groundCheck;
+        private AttackSpawnManager _attackSpawnManager;
         
         // ------ Private Attributes ------
         private readonly Vector3 _defaultPosition = new Vector3(0, 3, 0);
         
-        private float _speed = 15.0f;
-        private float _jumpForce = 1000.0f;
-        private float _projectileSpeed = 5.0f;
-
-        private bool _canAttack = true;
-
-        [Range(0, 2)] private int _jumpCount;
-        
-        private bool _isOnGround; //Tells if the player is on the ground or not
-        private bool _canJump = true; //In order to prevent jumping with continous pressing
-        private bool _canDoubleJump = true;
-        
+        private float _speed = DefaultSpeed;
+        private float _jumpForce = DefaultJumpForce;
+        private float _projectileSpeed = DefaultProjectileSpeed;
+        private float _projectileDelay = DefaultProjectileDelay;
         private float _horizontalInput;
         
-        // ------ Public References------
-        [SerializeField] public GameObject projectile;
+        private bool _canAttack = true;
+        private bool _isOnGround; //Tells if the player is on the ground or not
+        private bool _canJump = true; //In order to prevent jumping with continous pressing
+        private bool _canDoubleJump = false;
+
+        [Range(0, 2)] private int _jumpCount;
+
+        private Orientation _orientation = Orientation.Left;
+
+        private enum Orientation 
+        {
+            Left = -1,
+            Right = 1
+        };
 
         // ------ Event Methods ------
 
@@ -40,6 +49,7 @@ namespace _enamis_prototype.Scripts.Player
             //Initializing References
             _playerRigidbody2D = GetComponent<Rigidbody2D>();
             _groundCheck = GameObject.Find("Ground Check").GetComponent<GroundCheck>();
+            _attackSpawnManager = GameObject.Find("AttackSpawnManager").GetComponent<AttackSpawnManager>();
         }
 
         // Start is called before the first frame update
@@ -47,6 +57,7 @@ namespace _enamis_prototype.Scripts.Player
         {
             //Initializing Physics Properties
             Physics2D.gravity *= GravityModifier;
+            SetProjectileSpeed(DefaultProjectileSpeed);
         }
         
         // FixedUpdate is called once per frame
@@ -74,6 +85,12 @@ namespace _enamis_prototype.Scripts.Player
             }
 
             _horizontalInput = Input.GetAxis("Horizontal");
+
+            if (_horizontalInput < 0)
+                _orientation = Orientation.Left;
+            else if (_horizontalInput > 0)
+                _orientation = Orientation.Right;
+            
             Move();
 
             if (_playerRigidbody2D.velocity.y > MaxFallSpeed)
@@ -90,7 +107,7 @@ namespace _enamis_prototype.Scripts.Player
             
             if (Input.GetKey(KeyCode.Z) && _canAttack)
             {
-                Instantiate(projectile, transform.position, transform.rotation);
+                _attackSpawnManager.SpawnProjectile();
                 StartCoroutine(AttackDelay());
             }
 
@@ -99,6 +116,16 @@ namespace _enamis_prototype.Scripts.Player
                 transform.localPosition = _defaultPosition;
                 SetPlayerVelocity(0, 0);
             }
+        }
+
+        public float GetProjectileSpeed()
+        {
+            return _projectileSpeed;
+        }
+
+        public int GetOrientation()
+        {
+            return (int) _orientation;
         }
         
         // ------- Basics Movements Methods -------
@@ -128,6 +155,11 @@ namespace _enamis_prototype.Scripts.Player
         {
             _playerRigidbody2D.velocity = new Vector2(x, y);
         }
+
+        private void SetProjectileSpeed(float speed)
+        {
+            _projectileSpeed = speed;
+        }
         
         
         // ------- Collisions and Triggers Methods -------
@@ -150,15 +182,17 @@ namespace _enamis_prototype.Scripts.Player
          */
         private IEnumerator JumpAnimationScale()
         {
-            transform.localScale += new Vector3(0, -0.5f, 0);
+            var transform1 = transform;
+            transform1.localScale += new Vector3(0, -0.5f, 0);
             yield return new WaitForSeconds(0.1f);
-            transform.localScale += new Vector3(0, 0.5f, 0);
+            // ReSharper disable once Unity.InefficientPropertyAccess
+            transform1.localScale += new Vector3(0, 0.5f, 0);
         }
 
         private IEnumerator AttackDelay()
         {
             _canAttack = false;
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(_projectileDelay);
             _canAttack = true;
         }
     }

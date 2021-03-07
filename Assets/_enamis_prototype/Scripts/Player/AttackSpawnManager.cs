@@ -2,22 +2,15 @@ using UnityEngine;
 
 namespace _enamis_prototype.Scripts.Player
 {
-   
     public class AttackSpawnManager : MonoBehaviour
     {
-        private float speed = 5.0f;
-        
         [SerializeField] public GameObject projectile;
-       
+
         // Update is called once per frame
-        void Update()
+        public void SpawnProjectile()
         {
-            if (Input.GetKey(KeyCode.Z))
-            {
-                Instantiate(projectile);
-                
-                projectile.transform.Translate(Vector3.left * (Time.deltaTime * speed));
-            }
+            var transform1 = transform;
+            Instantiate(projectile, transform1.position, transform1.rotation);
         }
     }
 }

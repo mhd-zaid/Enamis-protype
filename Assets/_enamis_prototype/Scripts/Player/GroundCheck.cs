@@ -6,13 +6,13 @@ namespace _enamis_prototype.Scripts.Player
     {
         private bool _groundCheck;
 
-        private void OnCollisionEnter2D(Collision2D other)
+        private void OnTriggerEnter2D(Collider2D other)
         {
             if (other.gameObject.CompareTag("Ground") || other.gameObject.CompareTag("Rock"))
                 _groundCheck = true;
         }
 
-        private void OnCollisionExit2D(Collision2D other)
+        private void OnTriggerExit2D(Collider2D other)
         {
             if (other.gameObject.CompareTag("Ground"))
                 _groundCheck = false;
