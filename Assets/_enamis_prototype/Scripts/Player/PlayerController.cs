@@ -18,6 +18,9 @@ namespace _enamis_prototype.Scripts.Player
         
         private float _speed = 15.0f;
         private float _jumpForce = 1000.0f;
+        private float _projectileSpeed = 5.0f;
+
+        private bool _canAttack = true;
 
         [Range(0, 2)] private int _jumpCount;
         
@@ -28,6 +31,7 @@ namespace _enamis_prototype.Scripts.Player
         private float _horizontalInput;
         
         // ------ Public References------
+        [SerializeField] public GameObject projectile;
 
         // ------ Event Methods ------
 
@@ -82,6 +86,12 @@ namespace _enamis_prototype.Scripts.Player
             if (!_canJump && Input.GetKeyUp(KeyCode.Space))
             {
                 _canJump = true;
+            }
+            
+            if (Input.GetKey(KeyCode.Z) && _canAttack)
+            {
+                Instantiate(projectile, transform.position, transform.rotation);
+                StartCoroutine(AttackDelay());
             }
 
             if (transform.position.y < -20)
@@ -143,6 +153,13 @@ namespace _enamis_prototype.Scripts.Player
             transform.localScale += new Vector3(0, -0.5f, 0);
             yield return new WaitForSeconds(0.1f);
             transform.localScale += new Vector3(0, 0.5f, 0);
+        }
+
+        private IEnumerator AttackDelay()
+        {
+            _canAttack = false;
+            yield return new WaitForSeconds(0.5f);
+            _canAttack = true;
         }
     }
 }

@@ -15,20 +15,20 @@ namespace _enamis_prototype.Scripts
         
         // ------ Public Attributes ------
         
-        private int _life = 10;
+        [SerializeField] public int life = 10;
         
         // ------ Public References------
         
 
-        private void OnCollisionEnter2D(Collision2D other)
+        private void OnTriggerEnter2D(Collider2D other)
         {
             if (other.gameObject.CompareTag("Projectile"))
             {
-                _life -= 5;
-                if (_life <= 0)
-                {
+                Destroy(other.gameObject);
+                life -= 5;
+                if (life <= 0)
+                
                     Destroy(gameObject);
-                }
             }
         }
     }

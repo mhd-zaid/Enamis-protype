@@ -11,13 +11,14 @@ GameObject:
   - component: {fileID: 875592681369838567}
   - component: {fileID: 5157594820243108153}
   - component: {fileID: 735305151817824921}
+  - component: {fileID: 1697097086}
   m_Layer: 0
   m_Name: Laser
-  m_TagString: Untagged
+  m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &875592681369838567
 Transform:
   m_ObjectHideFlags: 0
@@ -143,6 +144,32 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 0
   m_Loop: 0
+--- !u!61 &1697097086
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4846452840444882853}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 4.808593, y: 0.000000014901161}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 10.617186, y: 0.12499547}
+  m_EdgeRadius: 0
 --- !u!1 &6799693427185205352
 GameObject:
   m_ObjectHideFlags: 0
@@ -228,7 +255,7 @@ GameObject:
   - component: {fileID: 6036726498895162161}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -333,6 +360,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 963fb8737235e3f4e88bcce68062b2c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  projectile: {fileID: 5756749732075528547, guid: 480c785310091d74eb7110ff68c7d6be, type: 3}
 --- !u!70 &6036726498895162161
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
