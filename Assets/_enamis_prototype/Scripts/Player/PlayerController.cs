@@ -17,6 +17,15 @@ namespace _enamis_prototype.Scripts.Player
         // ------ Private Attributes ------
         private readonly Vector3 _defaultPosition = new Vector3(0, 3, 0);
         
+        public Transform wallGrabPoint;
+        public Transform wallGrabPoint2;
+
+        private bool _canWallJump,_isWallJump;
+        public LayerMask wall;
+        private float gravityStore;
+        private float wallJumpTime = .2f;
+        private float wallJumpCounter;
+        
         private float _speed = 15.0f;
         private float jumpForce = 1000.0f;
 
@@ -44,6 +53,7 @@ namespace _enamis_prototype.Scripts.Player
         {
             //Initializing Physics Properties
             Physics2D.gravity *= GravityModifier;
+            gravityStore = _playerRigidbody2D.gravityScale;
         }
         
         // FixedUpdate is called once per frame
@@ -80,15 +90,23 @@ namespace _enamis_prototype.Scripts.Player
         // Update is called once per frame
         private void Update()
         {
-            if (!_canJump && Input.GetKeyUp(KeyCode.Space))
+            if (wallJumpCounter <= 0)
             {
-                _canJump = true;
-            }
+                if (!_canJump && Input.GetKeyUp(KeyCode.Space))
+                {
+                    _canJump = true;
+                }
 
-            if (transform.position.y < -20)
+                if (transform.position.y < -20)
+                {
+                    transform.localPosition = _defaultPosition;
+                    SetPlayerVelocity(0, 0);
+                }
+                WallJump();
+            }
+            else
             {
-                transform.localPosition = _defaultPosition;
-                SetPlayerVelocity(0, 0);
+                wallJumpCounter -= Time.deltaTime;
             }
         }
         
@@ -113,6 +131,38 @@ namespace _enamis_prototype.Scripts.Player
             _isOnGround = false;
             _canJump = false;
             ++_jumpCount;
+        }
+        private void WallJump()
+        {
+            //Walljump
+            _canWallJump = Physics2D.OverlapCircle(wallGrabPoint.position, .1f, wall)||Physics2D.OverlapCircle(wallGrabPoint2.position, .1f, wall);
+            _isWallJump = false;
+            if (_canWallJump && !_isOnGround)
+            {
+                if ((transform.localScale.x == 1.0f && Input.GetAxis("Horizontal") > 0) ||
+                    (transform.localScale.x == 1.0f && Input.GetAxis("Horizontal") < 0))
+                {
+                    _isWallJump = true;
+                }
+            }
+
+            if (_isWallJump)
+            {
+                if (Input.GetKeyUp(KeyCode.Space))
+                {
+                    Jump();
+                    wallJumpCounter = wallJumpTime;
+                    _playerRigidbody2D.velocity = Vector2.up*25;
+                    _playerRigidbody2D.gravityScale = gravityStore;
+                    _isWallJump = false;
+                }
+
+                _playerRigidbody2D.gravityScale = gravityStore;
+            }
+            else
+            {
+                _playerRigidbody2D.gravityScale = gravityStore;
+            }
         }
 
         private void SetPlayerVelocity(float x, float y)

@@ -47,3 +47,4 @@ namespace _enamis_prototype.Scripts.Platforms
         }
     }
 }
+
