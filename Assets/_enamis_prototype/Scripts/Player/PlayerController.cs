@@ -20,7 +20,7 @@ namespace _enamis_prototype.Scripts.Player
         public Transform wallGrabPoint;
         public Transform wallGrabPoint2;
 
-        private bool _canWallJump,_isWallJump;
+        private bool _canWallJump,_isWallJump,_isflying;
         public LayerMask wall;
         private float gravityStore;
         private float wallJumpTime = .2f;
@@ -103,6 +103,7 @@ namespace _enamis_prototype.Scripts.Player
                     SetPlayerVelocity(0, 0);
                 }
                 WallJump();
+                flyingjump();
             }
             else
             {
@@ -164,7 +165,18 @@ namespace _enamis_prototype.Scripts.Player
                 _playerRigidbody2D.gravityScale = gravityStore;
             }
         }
+        
+        private void flyingjump()
+        {
+            if (!_isOnGround && !_isflying)
+            {
+                if (Input.GetKeyDown(KeyCode.X))
+                {
+                    StartCoroutine(time());
+                }
+            }
 
+        }
         private void SetPlayerVelocity(float x, float y)
         {
             _playerRigidbody2D.velocity = new Vector2(x, y);
@@ -185,10 +197,19 @@ namespace _enamis_prototype.Scripts.Player
         }
 
         // ------- Coroutines Methods -------
-        
+        IEnumerator time()
+        {
+            gravityStore = 0f;
+            _isflying = true;
+            yield return new WaitForSeconds(2);
+            gravityStore = 1f;
+            _isflying = false;
+
+        }
         /**
          * WILL BECOME OBSOLETE AFTER CREATION OF SPRITE ANIMATOR
          */
+        
         private IEnumerator JumpAnimationScale()
         {
             transform.localScale += new Vector3(0, -0.5f, 0);
