@@ -28,6 +28,8 @@ namespace _enamis_prototype.Scripts.Player
         
         private float _speed = 15.0f;
         private float jumpForce = 1000.0f;
+        //dash
+        private float dashForce = 5f;
 
         [Range(0, 2)] private int _jumpCount;
         
@@ -104,6 +106,7 @@ namespace _enamis_prototype.Scripts.Player
                 }
                 WallJump();
                 flyingjump();
+                dash();
             }
             else
             {
@@ -176,6 +179,15 @@ namespace _enamis_prototype.Scripts.Player
                 }
             }
 
+        }
+        
+        private void dash()
+        {
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                Vector3 movdir = new Vector2(_playerRigidbody2D.velocity.x,_playerRigidbody2D.velocity.y).normalized;
+                transform.position += movdir * dashForce;
+            }
         }
         private void SetPlayerVelocity(float x, float y)
         {
