@@ -11,11 +11,15 @@ TagManager:
   - Rock
   - Enemy
   - Projectile
+  - Point
+  - PointDouble
+  - PointProjectile
+  - PointDash
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Wall
   - Water
   - UI
   - 

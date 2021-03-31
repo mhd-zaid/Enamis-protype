@@ -12,6 +12,7 @@ namespace _enamis_prototype.Scripts.Player
         private const float DefaultProjectileDelay = 0.5f;
         private const float DefaultSpeed = 15.0f;
         private const float DefaultJumpForce = 1300.0f;
+        private const float DefaultDashSpeed = 5.0f;
         
         // ------ References ------
         private Rigidbody2D _playerRigidbody2D;
@@ -25,12 +26,20 @@ namespace _enamis_prototype.Scripts.Player
         private float _jumpForce = DefaultJumpForce;
         private float _projectileSpeed = DefaultProjectileSpeed;
         private float _projectileDelay = DefaultProjectileDelay;
+        private float _dashSpeed = DefaultDashSpeed;
+
         private float _horizontalInput;
+        private float gravityStore;
         
         private bool _canAttack = true;
-        private bool _isOnGround; //Tells if the player is on the ground or not
+        private bool _canWallJump = false;
+        private bool _canDash = false;
         private bool _canJump = true; //In order to prevent jumping with continous pressing
         private bool _canDoubleJump = false;
+        
+        private bool _isOnGround; //Tells if the player is on the ground or not
+        private bool _isFlying = false;
+        private bool _isWallJump = false;
 
         [Range(0, 2)] private int _jumpCount;
 
@@ -84,13 +93,23 @@ namespace _enamis_prototype.Scripts.Player
                     break;
             }
 
+            if (Input.GetKey(KeyCode.A) && _canDash)
+            {
+                Dash();
+            }
+
             _horizontalInput = Input.GetAxis("Horizontal");
 
-            if (_horizontalInput < 0)
+            if (_horizontalInput < 0) {
                 _orientation = Orientation.Left;
+                GetComponent<SpriteRenderer>().flipX = true;
+            }
             else if (_horizontalInput > 0)
+            {
                 _orientation = Orientation.Right;
-            
+                GetComponent<SpriteRenderer>().flipX = false;
+            }
+
             Move();
 
             if (_playerRigidbody2D.velocity.y > MaxFallSpeed)
@@ -145,10 +164,25 @@ namespace _enamis_prototype.Scripts.Player
         {
             SetPlayerVelocity(_playerRigidbody2D.velocity.x, 0);
             _playerRigidbody2D.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
-            StartCoroutine(nameof(JumpAnimationScale));
             _isOnGround = false;
             _canJump = false;
             ++_jumpCount;
+        }
+
+        private void Fly()
+        {
+            if (!_isOnGround && !_isFlying)
+            {
+                if (Input.GetKeyDown(KeyCode.X))
+                    StartCoroutine(Time());
+            }
+        }
+        
+        private void Dash()
+        {
+            var velocity = _playerRigidbody2D.velocity;
+            Vector3 movdir = new Vector2(velocity.x,velocity.y).normalized;
+            transform.position += movdir * _dashSpeed;
         }
 
         private void SetPlayerVelocity(float x, float y)
@@ -160,8 +194,8 @@ namespace _enamis_prototype.Scripts.Player
         {
             _projectileSpeed = speed;
         }
-        
-        
+
+
         // ------- Collisions and Triggers Methods -------
         private void OnCollisionEnter2D(Collision2D other)
         {
@@ -173,27 +207,41 @@ namespace _enamis_prototype.Scripts.Player
         {
             if (other.gameObject.CompareTag("Token"))
                 Destroy(other.gameObject);
+            if (other.gameObject.CompareTag("PointDouble"))
+            {
+                _canDoubleJump = true;
+                Destroy(other.gameObject);
+            }
+            if (other.gameObject.CompareTag("PointProjectile"))
+            {
+                _canAttack = true;
+                Destroy(other.gameObject);
+            }
+            if (other.gameObject.CompareTag("PointDash"))
+            {
+                _canDash = true;
+                Destroy(other.gameObject);
+            }
         }
 
         // ------- Coroutines Methods -------
         
-        /**
-         * WILL BECOME OBSOLETE AFTER CREATION OF SPRITE ANIMATOR
-         */
-        private IEnumerator JumpAnimationScale()
-        {
-            var transform1 = transform;
-            transform1.localScale += new Vector3(0, -0.5f, 0);
-            yield return new WaitForSeconds(0.1f);
-            // ReSharper disable once Unity.InefficientPropertyAccess
-            transform1.localScale += new Vector3(0, 0.5f, 0);
-        }
-
+       
         private IEnumerator AttackDelay()
         {
             _canAttack = false;
             yield return new WaitForSeconds(_projectileDelay);
             _canAttack = true;
+        }
+        
+        IEnumerator Time()
+        {
+            gravityStore = 0f;
+            _isFlying = true;
+            yield return new WaitForSeconds(2);
+            gravityStore = 1f;
+            _isFlying = false;
+
         }
     }
 }
