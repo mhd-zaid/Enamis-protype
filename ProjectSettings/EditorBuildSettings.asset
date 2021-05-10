@@ -6,11 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/_enamis_prototype/Scenes/SampleScene.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
-  - enabled: 1
-    path: Assets/_enamis_prototype/Scenes/Menu.unity
-    guid: 08d265c9cdc2efd488f9530a5a422e8a
+    path: Assets/_enamis_prototype/Scenes/MenuPrincipal.unity
+    guid: 386f31f836994b4429a3f47c88e4ba36
   - enabled: 1
     path: Assets/_enamis_prototype/Scenes/Level Test.unity
     guid: e29baa8e1752d8044a094eaa2afb969e
